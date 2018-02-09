@@ -1,5 +1,6 @@
 import configparser
 import os
+import sys
 
 class Config:
     def __init__(self):
@@ -14,8 +15,11 @@ class Config:
         self.parser.add_section('providers')
         self.parser['providers']['enabled'] = 'knmi'
         
-        for key in self.get_array('providers', 'enabled'):
-            self.parser.add_section(key)
+        for root, directories, files in os.walk(os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) + '/providers/'):
+            if root.endswith('providers/'):
+                for filename in files:
+                    if filename.endswith('.py') and not filename == 'provider.py':
+                        self.parser.add_section('.'.join(filename.split('.')[:-1]))
     
     def inject(self, provider, dictionary):
         for key in dictionary.keys():
