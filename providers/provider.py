@@ -20,8 +20,7 @@ class Base(threading.Thread):
         self.delay = 1
     
         self.value = []
-        self.new_hash = ''
-        self.old_hash = ''
+        self.hashes = []
     
     
     
@@ -62,33 +61,33 @@ class Base(threading.Thread):
     def run(self):
         while True:
             self.log('Checking')
-            
-            self.old_hash = self.new_hash
             self.check()
             
             if type(self.value) == str:
                 self.value = [ self.value ]
-            self.new_hash = hashlib.md5(''.join(self.value).encode('utf-8')).hexdigest()
             
-            if not self.new_hash == self.old_hash:
-                self.notify()
+            for item in self.value:
+                item_hash = hashlib.md5(item.encode('utf-8')).hexdigest()
+                
+                if not item_hash in self.hashes:
+                    self.notify(item, item_hash)
+                    self.hashes.append(item_hash)
             
             time.sleep(self.delay)
     
     def log(self, message):
         print('[' + self.prefix + '] ' + message)
     
-    def notify(self):
-        for item in self.value:
-            notify2.init(self.prefix + hashlib.md5(item.encode('utf-8')).hexdigest())
-            
-            notice = notify2.Notification(self.prefix, item)
-            
-            if os.path.isfile(self.resource_path + self.prefix + '.png'):
-                notice = notify2.Notification(self.prefix, item, 'file://' + self.resource_path + self.prefix + '.png')
-            
-            notice.set_timeout(5000)
-            notice.show()
+    def notify(self, item, item_hash):
+        notify2.init(self.prefix + item_hash)
+        
+        notice = notify2.Notification(self.prefix, item)
+        
+        if os.path.isfile(self.resource_path + self.prefix + '.png'):
+            notice = notify2.Notification(self.prefix, item, 'file://' + self.resource_path + self.prefix + '.png')
+        
+        notice.set_timeout(5000)
+        notice.show()
     
     def get_html(self, url):
         return bs(self.http_pool.request('GET', url).data.decode('utf-8'), 'lxml')
