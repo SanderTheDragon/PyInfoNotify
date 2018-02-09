@@ -18,7 +18,7 @@ class Config:
         for root, directories, files in os.walk(os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) + '/providers/'):
             if root.endswith('providers/'):
                 for filename in files:
-                    if filename.endswith('.py') and not filename == 'provider.py':
+                    if filename.endswith('.py') and not filename == 'provider.py' and not filename == '__init__.py':
                         self.parser.add_section('.'.join(filename.split('.')[:-1]))
     
     def inject(self, provider, dictionary):
