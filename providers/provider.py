@@ -19,7 +19,7 @@ class Base(threading.Thread):
         self.prefix = 'UNKOWN'
         self.delay = 1
     
-        self.value = ''
+        self.value = []
         self.new_hash = ''
         self.old_hash = ''
     
@@ -53,8 +53,6 @@ class Base(threading.Thread):
                     delay += amount * 60 * 60
             
             self.delay = delay
-        
-        notify2.init(self.prefix)
     
     def check(self):
         pass
@@ -68,8 +66,9 @@ class Base(threading.Thread):
             self.old_hash = self.new_hash
             self.check()
             
-            self.value = str(self.value)
-            self.new_hash = hashlib.md5(self.value.encode('utf-8')).hexdigest()
+            if type(self.value) == str:
+                self.value = [ self.value ]
+            self.new_hash = hashlib.md5(''.join(self.value).encode('utf-8')).hexdigest()
             
             if not self.new_hash == self.old_hash:
                 self.notify()
@@ -80,13 +79,16 @@ class Base(threading.Thread):
         print('[' + self.prefix + '] ' + message)
     
     def notify(self):
-        notice = notify2.Notification(self.prefix, self.value)
-        
-        if os.path.isfile(self.resource_path + self.prefix + '.png'):
-            notice = notify2.Notification(self.prefix, self.value, 'file://' + self.resource_path + self.prefix + '.png')
-        
-        notice.set_timeout(5000)
-        notice.show()
+        for item in self.value:
+            notify2.init(self.prefix + hashlib.md5(item.encode('utf-8')).hexdigest())
+            
+            notice = notify2.Notification(self.prefix, item)
+            
+            if os.path.isfile(self.resource_path + self.prefix + '.png'):
+                notice = notify2.Notification(self.prefix, item, 'file://' + self.resource_path + self.prefix + '.png')
+            
+            notice.set_timeout(5000)
+            notice.show()
     
     def get_html(self, url):
         return bs(self.http_pool.request('GET', url).data.decode('utf-8'), 'lxml')

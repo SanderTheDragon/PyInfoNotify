@@ -9,5 +9,6 @@ class Provider(provider.Base):
         return True
     
     def check(self):
-        self.value = self.get_html(self.data['url'])
+        self.value = [ '1', '2', '3' ]
+        #self.get_html(self.data['url'])
         pass
