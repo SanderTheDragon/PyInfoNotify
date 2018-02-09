@@ -24,6 +24,9 @@ class Base(threading.Thread):
     
     
     
+    def get_config(self):
+        return {}
+    
     def init(self):
         return False
     

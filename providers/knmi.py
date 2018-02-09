@@ -2,6 +2,11 @@ import time
 from providers import provider
 
 class Provider(provider.Base):
+    def get_config(self):
+        return {
+            'province': 'zuid-holland'
+        }
+    
     def init(self):
         self.prefix = 'KNMI Waarschuwingen'
         self.delay = '10s'
@@ -9,7 +14,7 @@ class Provider(provider.Base):
         return True
     
     def check(self):
-        html = self.get_html(self.data['url'])
+        html = self.get_html('http://knmi.nl/nederland-nu/weer/waarschuwingen/' + self.data['province'])
         
         for warning in html.findAll('div', { 'class': 'warning-overview' }):
             if not warning.find('h3').text == 'Geen waarschuwingen voor':

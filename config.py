@@ -14,8 +14,14 @@ class Config:
         self.parser.add_section('providers')
         self.parser['providers']['enabled'] = 'knmi'
         
-        self.parser.add_section('knmi')
-        self.parser['knmi']['url'] = 'http://knmi.nl/nederland-nu/weer/waarschuwingen/zuid-holland'
+        for key in self.get_array('providers', 'enabled'):
+            self.parser.add_section(key)
+    
+    def inject(self, provider, dictionary):
+        for key in dictionary.keys():
+            self.parser[provider][key] = dictionary[key]
+        
+        self.write()
     
     def read(self):
         return self.parser.read(self.config_file)

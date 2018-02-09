@@ -12,5 +12,7 @@ if __name__ == '__main__':
     
     loader.load(cfg.get_array('providers', 'enabled'), cfg.get_data_dict())
     
-    for provider in loader.get_loaded():
-        provider.start()
+    loaded = loader.get_loaded()
+    for provider in loaded.keys():
+        cfg.inject(provider, loaded[provider].get_config())
+        loaded[provider].start()

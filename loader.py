@@ -18,10 +18,10 @@ def load(providers, data):
             loaded[provider] = False
 
 def get_loaded():
-    array = []
+    dictionary = {}
     
     for key in loaded.keys():
         if not not loaded[key]:
-            array.append(loaded[key])
+            dictionary[key] = loaded[key]
     
-    return array
+    return dictionary
