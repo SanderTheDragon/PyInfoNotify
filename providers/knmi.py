@@ -31,6 +31,7 @@ class Provider(provider.Base):
                 message += '<img style=\"float: left;\" src=\"file://' + self.resource_path + 'knmi_' + title.attrs['class'][-1] + '.png\" />'
                 message += '<h2 style=\'margin: 0 40px; float: left; color: #' + color + ';\'>' + title.text + '</h2>'
                 
-                message += warning.find('div', { 'class': 'warning-overview__description' }).text
+                message += warning.find('div', { 'class': 'warning-overview__description' }).decode_contents()
+                message = message[:-5] #Remove last <br/>
                 
                 self.values.append(message)
