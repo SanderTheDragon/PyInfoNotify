@@ -39,7 +39,7 @@ class Provider(provider.Base):
                             break
                 
                 if notify:
-                    self.value.append(message)
+                    self.values.append(message)
         
         
         
@@ -79,4 +79,4 @@ class Provider(provider.Base):
                             break
                 
                 if notify:
-                    self.value.append(message)
+                    self.values.append(message)

@@ -33,4 +33,4 @@ class Provider(provider.Base):
                 
                 message += warning.find('div', { 'class': 'warning-overview__description' }).text
                 
-                self.value.append(message)
+                self.values.append(message)

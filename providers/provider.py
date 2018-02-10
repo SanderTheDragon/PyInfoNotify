@@ -20,7 +20,7 @@ class Base(threading.Thread):
         self.prefix = 'UNKOWN'
         self.delay = 1
     
-        self.value = []
+        self.values = []
         self.hashes = []
     
     
@@ -67,10 +67,10 @@ class Base(threading.Thread):
             self.log('Checking')
             self.check()
             
-            if type(self.value) == str:
-                self.value = [ self.value ]
+            if type(self.values) == str:
+                self.values = [ self.values ]
             
-            for item in self.value:
+            for item in self.values:
                 item_hash = hashlib.md5(item.encode('utf-8')).hexdigest()
                 
                 if not item_hash in self.hashes:
