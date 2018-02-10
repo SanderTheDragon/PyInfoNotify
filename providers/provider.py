@@ -1,3 +1,4 @@
+import certifi
 import hashlib
 import lxml
 import notify2
@@ -13,7 +14,7 @@ class Base(threading.Thread):
         threading.Thread.__init__(self)
         
         self.data = data
-        self.http_pool = urllib3.PoolManager()
+        self.http_pool = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
         self.resource_path = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) + '/resources/'
         
         self.prefix = 'UNKOWN'
