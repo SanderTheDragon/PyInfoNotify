@@ -65,19 +65,23 @@ class Base(threading.Thread):
     def run(self):
         while True:
             self.log('Checking')
-            self.check()
-            
-            if type(self.values) == str:
-                self.values = [ self.values ]
-            
-            for item in self.values:
-                item_hash = hashlib.md5(item.encode('utf-8')).hexdigest()
+            try:
+                self.check()
                 
-                if not item_hash in self.hashes:
-                    self.notify(item, item_hash)
-                    self.hashes.append(item_hash)
-            
-            time.sleep(self.delay)
+                if type(self.values) == str:
+                    self.values = [ self.values ]
+                
+                for item in self.values:
+                    item_hash = hashlib.md5(item.encode('utf-8')).hexdigest()
+                    
+                    if not item_hash in self.hashes:
+                        self.notify(item, item_hash)
+                        self.hashes.append(item_hash)
+                
+                time.sleep(self.delay)
+            except:
+                self.log('Something went wrong, retry in 5 seconds')
+                time.sleep(5)
     
     def log(self, message):
         print('[' + self.prefix + '] ' + message)
