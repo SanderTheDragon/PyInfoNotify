@@ -14,6 +14,7 @@ class Config:
     def default(self):
         self.parser.add_section('providers')
         self.parser['providers']['enabled'] = 'knmi ns'
+        self.parser['providers']['sound'] = 'knmi ns'
         
         self.check_sections()
     

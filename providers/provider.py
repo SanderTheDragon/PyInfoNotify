@@ -3,6 +3,7 @@ import hashlib
 import lxml
 import notify2
 import os
+import simpleaudio
 import sys
 import threading
 import time
@@ -16,10 +17,11 @@ class Base(threading.Thread):
         self.data = data
         self.http_pool = urllib3.PoolManager(cert_reqs='CERT_REQUIRED', ca_certs=certifi.where())
         self.resource_path = os.path.dirname(os.path.abspath(sys.modules['__main__'].__file__)) + '/resources/'
+        self.sound = False
         
         self.prefix = 'UNKOWN'
         self.delay = 1
-    
+        
         self.values = []
         self.hashes = []
     
@@ -64,6 +66,8 @@ class Base(threading.Thread):
     
     def run(self):
         while True:
+            sounded = False
+            
             self.log('Checking')
             try:
                 self.check()
@@ -75,6 +79,10 @@ class Base(threading.Thread):
                     item_hash = hashlib.md5(item.encode('utf-8')).hexdigest()
                     
                     if not item_hash in self.hashes:
+                        if self.sound and not sounded and os.path.isfile(self.resource_path + self.prefix + '.wav'):
+                            simpleaudio.WaveObject.from_wave_file(self.resource_path + self.prefix + '.wav').play()
+                            sounded = True
+                        
                         self.notify(item, item_hash)
                         self.hashes.append(item_hash)
                 

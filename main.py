@@ -10,7 +10,7 @@ if __name__ == '__main__':
         print('Could not read configuration')
         cfg.default()
     
-    loader.load(cfg.get_array('providers', 'enabled'), cfg.get_data_dict())
+    loader.load(cfg.get_array('providers', 'enabled'), cfg)
     
     loaded = loader.get_loaded()
     for provider in loaded.keys():

@@ -2,15 +2,18 @@ import importlib
 
 loaded = {}
 
-def load(providers, data):
+def load(providers, config):
     for provider in providers:
         try:
             mod = importlib.import_module('.' + provider, 'providers')
-            loaded[provider] = mod.Provider(data[provider])
+            loaded[provider] = mod.Provider(config.get_data_dict()[provider])
             
             if not loaded[provider].init():
                 print('Failed to initialize ' + provider)
                 loaded[provider] = False
+            
+            if provider in config.get_array('providers', 'sound'):
+                loaded[provider].sound = True
             
             loaded[provider].post_init()
         except ModuleNotFoundError:
