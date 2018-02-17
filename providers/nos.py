@@ -42,7 +42,7 @@ class Provider(provider.Base):
                 
                 desc = li.findAll('div', { 'class': 'liveblog__elements' })[0]
                 for p in desc.findAll('p'):
-                    message += '<p style=\"margin-top: 8px;\">' + p.text + '</p>'
+                    message += '<p style=\"margin-top: 8px;\">' + p.decode_contents() + '</p>'
                 
                 if self.data['images'] == 'True':
                     images = desc.findAll('img')
