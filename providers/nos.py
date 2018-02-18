@@ -21,37 +21,77 @@ class Provider(provider.Base):
     
     def check(self):
         html = self.get_html('https://nos.nl/')
-        live_url = ''
+        live_urls = []
         
         for li in html.findAll('li', { 'class': 'list-featured__item' }):
             badge = li.findAll('span', { 'class': 'badge' })
             if len(badge) > 0 and badge[0].text == 'liveblog':
-                live_url = 'https://nos.nl' + li.findAll('a')[0].attrs['href']
+                live_urls.append('https://nos.nl' + li.findAll('a')[0].attrs['href'])
         
-        if len(live_url) > 0:
-            html = self.get_html(live_url)
-            updates = html.findAll('li', { 'class': 'liveblog__update' })
-            if len(updates) > int(self.data['limit']):
-                updates = updates[:int(self.data['limit'])]
-            
-            for li in updates:
-                message = ''
+        for live_url in live_urls:
+            if len(live_url) > 0:
+                html = self.get_html(live_url)
+                updates = html.findAll('li', { 'class': 'liveblog__update' })
+                if len(updates) > int(self.data['limit']):
+                    updates = updates[:int(self.data['limit'])]
                 
-                title = li.findAll('h2', { 'class': 'liveblog__update__title' })[0].text
-                message = '<h3>' + title + '</h3>'
-                
-                desc = li.findAll('div', { 'class': 'liveblog__elements' })[0]
-                for p in desc.findAll('p'):
-                    message += '<p style=\"margin-top: 8px;\">' + p.decode_contents() + '</p>'
-                
-                if self.data['images'] == 'True':
-                    images = desc.findAll('img')
-                    if len(images) > 0:
-                        src = images[0].attrs['src']
-                        image = self.download_image(src, title)
-                        message += '<img src=\"' + image + '\" />'
-                
-                self.values.append(message)
+                for li in updates:
+                    message = ''
+                    
+                    title = li.findAll('h2', { 'class': 'liveblog__update__title' })[0].text
+                    message = '<h3>' + title + '</h3>'
+                    
+                    desc = li.findAll('div', { 'class': 'liveblog__elements' })[0]
+                    for p in desc.findAll('p'):
+                        message += '<p style=\"margin-top: 8px;\">' + p.decode_contents() + '</p>'
+                    
+                    tables = li.findAll('table')
+                    if len(tables) > 0:
+                        table = tables[0]
+                        even = True
+                        
+                        message += '<h4>' + li.findAll('h2')[-1].text + '</h4>'
+                        
+                        message += '<table cellpadding=\"5\">'
+                        for tr in table.findAll('tr'):
+                            column_count = len(tr.findAll('td'))
+                            
+                            message += '<tr>'
+                            if tr.parent.name == 'thead':
+                                for td in tr.findAll('td'):
+                                    if len(td.text) > 0:
+                                        message += '<th>' + td.text + '</th>'
+                            else:
+                                for td in tr.findAll('td'):
+                                    if len(td.text) > 0:
+                                        message += '<td>' + td.text + '</td>'
+                            message += '</tr>'
+                            
+                            even = not even
+                        message += '</table>'
+                    
+                    video = None
+                    videos = desc.findAll('a', { 'class': 'video-play__link' })
+                    if len(videos) > 0:
+                        video = videos[0]
+                    
+                    if self.data['images'] == 'True':
+                        images = desc.findAll('img')
+                        if len(images) > 0:
+                            src = images[0].attrs['src']
+                            image = self.download_image(src, title)
+                            
+                            if not video == None:
+                                message += '<a href=\"https://nos.nl' + video.attrs['href'] + '\">'
+                            
+                            message += '<img src=\"' + image + '\" />'
+                            
+                            if not video == None:
+                                message += '</a>'
+                    elif not video == None:
+                        message += '<a href=\"https://nos.nl' + video.attrs['href'] + '\">Video</a>'
+                    
+                    self.values.append(message)
     
     def download_image(self, src, name):
         image = self.http_pool.request('GET', src, preload_content=False)
