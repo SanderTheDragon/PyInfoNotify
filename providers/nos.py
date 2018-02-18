@@ -12,7 +12,7 @@ class Provider(provider.Base):
     
     def init(self):
         self.prefix = 'NOS Liveblog'
-        self.delay = '5m'
+        self.delay = '1m'
         
         if not os.path.isdir(self.resource_path + 'nos_temp'):
             os.mkdir(self.resource_path + 'nos_temp')
