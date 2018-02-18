@@ -71,9 +71,9 @@ class Provider(provider.Base):
                         message += '</table>'
                     
                     video = None
-                    videos = desc.findAll('a', { 'class': 'video-play__link' })
+                    videos = desc.findAll('div', { 'class': 'block_video' })
                     if len(videos) > 0:
-                        video = videos[0]
+                        video = videos[0].findAll('a')[0]
                     
                     if self.data['images'] == 'True':
                         images = desc.findAll('img')
