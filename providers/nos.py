@@ -84,7 +84,7 @@ class Provider(provider.Base):
                             if not video == None:
                                 message += '<a href=\"https://nos.nl' + video.attrs['href'] + '\">'
                             
-                            message += '<img src=\"' + image + '\" />'
+                            message += '<img src=\"file://' + image + '\" />'
                             
                             if not video == None:
                                 message += '</a>'
