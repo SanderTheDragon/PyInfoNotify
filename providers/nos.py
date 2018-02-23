@@ -28,6 +28,12 @@ class Provider(provider.Base):
             if len(badge) > 0 and badge[0].text == 'liveblog':
                 live_urls.append('https://nos.nl' + li.findAll('a')[0].attrs['href'])
         
+        
+        for li in html.findAll('li', { 'class': 'topstories__list-item' }):
+            badge = li.findAll('span', { 'class': 'badge' })
+            if len(badge) > 0 and badge[0].text == 'liveblog':
+                live_urls.append('https://nos.nl' + li.findAll('a')[0].attrs['href'])
+        
         for live_url in live_urls:
             if len(live_url) > 0:
                 html = self.get_html(live_url)
