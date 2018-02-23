@@ -73,6 +73,8 @@ class Provider(provider.Base):
                                 for td in tr.findAll('td'):
                                     if len(td.text) > 0:
                                         message += '<td>' + td.text + '</td>'
+                                    else:
+                                        message += '<td></td>'
                             message += '</tr>'
                             
                             even = not even
