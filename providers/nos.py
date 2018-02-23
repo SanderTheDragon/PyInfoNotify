@@ -61,6 +61,8 @@ class Provider(provider.Base):
                                 for td in tr.findAll('td'):
                                     if len(td.text) > 0:
                                         message += '<th>' + td.text + '</th>'
+                                    else:
+                                        message += '<th></th>'
                             else:
                                 for td in tr.findAll('td'):
                                     if len(td.text) > 0:
