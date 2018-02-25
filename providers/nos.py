@@ -7,7 +7,8 @@ class Provider(provider.Base):
     def get_config(self):
         return {
             'images': True,
-            'limit': 3
+            'limit': 3,
+            'exclude': []
         }
     
     def init(self):
@@ -37,6 +38,16 @@ class Provider(provider.Base):
         for live_url in live_urls:
             if len(live_url) > 0:
                 html = self.get_html(live_url)
+                
+                skip = False
+                metas = html.findAll('div', { 'class': 'liveblog-header__meta__item' })
+                for meta in metas:
+                    if meta.text in self.data['exclude'].split(' '):
+                        skip = True
+                
+                if skip:
+                    continue
+                
                 updates = html.findAll('li', { 'class': 'liveblog__update' })
                 if len(updates) > int(self.data['limit']):
                     updates = updates[:int(self.data['limit'])]
@@ -94,7 +105,7 @@ class Provider(provider.Base):
                             if not video == None:
                                 message += '<a href=\"https://nos.nl' + video.attrs['href'] + '\">'
                             
-                            message += '<img src=\"file://' + image + '\" />'
+                            message += '<img style=\"margin-top: 8px;\" src=\"file://' + image + '\" />'
                             
                             if not video == None:
                                 message += '</a>'
