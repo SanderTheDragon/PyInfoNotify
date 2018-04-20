@@ -42,8 +42,15 @@ class Provider(provider.Base):
                 skip = False
                 metas = html.findAll('div', { 'class': 'liveblog-header__meta__item' })
                 for meta in metas:
-                    if meta.text in self.data['exclude'].split(' '):
-                        skip = True
+                    meta_items = []
+                    if ', ' in meta.text:
+                        meta_items = meta.text.split(', ')
+                    else:
+                        meta_items = [ meta.text ]
+                    
+                    for meta_item in meta_items:
+                        if meta_item in self.data['exclude'].split(' '):
+                            skip = True
                 
                 if skip:
                     continue
