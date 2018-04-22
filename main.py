@@ -31,6 +31,7 @@ def start():
 
     loader.load(cfg)
 
+    global loaded
     loaded = loader.get_loaded()
     for provider in loaded.keys():
         cfg.inject(provider, loaded[provider])
