@@ -6,7 +6,9 @@ class Provider(provider.Base):
             '; filter': 'Only show notification if any of the words is in the message, empty or * will show all notifications',
             'filter': [],
             '; maintenance': 'Also show maintenance messages',
-            'maintenance': False
+            'maintenance': False,
+            '; alerts': 'Show country wide alerts',
+            'alerts': True
         }
 
 
@@ -108,3 +110,20 @@ class Provider(provider.Base):
 
                 if notify:
                     self.notifications.append(message)
+
+        if self.data['alerts'] == 'True':
+            notifications = html.findAll('li', { 'class': 'notificationList__item' })
+            for notification in notifications:
+                if 'notificationBar--alert' in notification.find('div').attrs['class']:
+                    link = 'https://www.ns.nl' + notification.find('a').attrs['href']
+
+                    html = self.get_html(link)
+
+                    title = html.find('h1').text.strip()
+                    last_update = html.find('span', { 'class': 'inlineNotification__text' }).text.strip()
+                    content_text = html.find('p', { 'data-type': 'cms-ArticleIntroText' }).text.replace('\r\n', '<br/><br/>').strip() + '<br/>'
+
+                    if self.data['html'] == 'True':
+                        self.notifications.append(self.html_notification('alert', title, last_update, content_text))
+                    else:
+                        self.notifications.append(self.notification('alert', title, last_update, content_text))
