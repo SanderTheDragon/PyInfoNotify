@@ -9,7 +9,7 @@ def load(config):
     for root, directories, files in os.walk(os.path.dirname(os.path.abspath(__file__)) + '/providers/'):
         if root.endswith('providers/'):
             for filename in files:
-                if filename.endswith('.py') and not filename == 'provider.py' and not filename == '__init__.py':
+                if filename.endswith('.py') and not ' ' in filename and not filename == 'provider.py' and not filename == 'providers.py' and not filename == 'notifications.py' and not filename == '__init__.py':
                     providers.append('.'.join(filename.split('.')[:-1]))
 
     for provider in providers:
