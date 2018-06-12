@@ -167,22 +167,51 @@ class Provider(provider.Base):
                         images = desc.findAll('img')
                         if len(images) > 0:
                             src = images[0].attrs['src']
-                            image = self.download_image(src, title)
+                            if not 'twimg.com/profile_images' in src:
+                                image = self.download_image(src, title)
 
-                            if not video == None:
-                                message += '<a href=\"https://nos.nl' + video.attrs['href'] + '\">'
+                                if not video == None:
+                                    message += '<a href=\"https://nos.nl' + video.attrs['href'] + '\">'
 
-                            message += '<img style=\"margin-top: 8px;\" src=\"file://' + image + '\" />'
+                                message += '<img style=\"margin-top: 8px;\" src=\"file://' + image + '\" />'
 
-                            if not video == None:
-                                message += '</a>'
+                                if not video == None:
+                                    message += '</a>'
                     elif not video == None:
                         message += '<a href=\"https://nos.nl' + video.attrs['href'] + '\">Video</a>'
+
+                    #Special tweet handler
+                    tweets = desc.findAll('a', { 'class': 'ext-twitter' })
+                    if len(tweets) > 0:
+                        tweet = tweets[0]
+                        message += '<br/>'
+
+                        avatar = None
+                        if self.data['images'] == 'True':
+                            avatar = tweet.find('div', { 'class': 'ext-twitter-header__avatar' }).find('img').attrs['src']
+                            image = self.download_image(avatar, 'avatar_' + title, 48)
+                            message += '<img style=\"margin-top: 8px; float: left;\" src=\"file://' + image + '\" />'
+
+                        name = tweet.find('div', { 'class': 'ext-twitter-header-author__decorate-name' }).decode_contents()
+                        username = tweet.find('div', { 'class': 'ext-twitter-header-author__username' }).decode_contents()
+
+                        if self.data['html'] == 'True':
+                            message += '<span style=\"float: left;\"><h3 style=\"margin: 0 60px;\">' + name + '</h3><h4 style=\"margin: 0 60px;\">' + username + '</h4></span><br/>'
+                        else:
+                            message += '<b>' + name + '</b>(<i>' + username + '</i>)<br/>'
+
+                    content = tweet.find('div', { 'class': 'ext-twitter-content' })
+                    if not content is None:
+                        tweetimg = content.findAll('img')[0].attrs['src']
+                        image = self.download_image(tweetimg, 'tweet_' + title)
+                        message += '<img style=\"margin-top: 8px;\" src=\"file://' + image + '\" /><br/><br/>'
+
+                    message += tweet.find('div', { 'class': 'ext-twitter-caption' }).decode_contents()
 
                     self.notifications.append(message)
 
 
-    def download_image(self, src, name):
+    def download_image(self, src, name, width=300):
         image = self.http_pool.request('GET', src, preload_content=False)
         ext = src.split('.')[-1]
 
@@ -190,7 +219,6 @@ class Provider(provider.Base):
             shutil.copyfileobj(image, icon)
 
         img = Image.open(self.resource_path + 'nos_temp/temp.' + ext)
-        width = 300
         ratio = float(width/float(img.size[0]))
         height = int(float(img.size[1]) * ratio)
 
