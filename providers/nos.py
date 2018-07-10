@@ -200,13 +200,13 @@ class Provider(provider.Base):
                         else:
                             message += '<b>' + name + '</b>(<i>' + username + '</i>)<br/>'
 
-                    content = tweet.find('div', { 'class': 'ext-twitter-content' })
-                    if not content is None:
-                        tweetimg = content.findAll('img')[0].attrs['src']
-                        image = self.download_image(tweetimg, 'tweet_' + title)
-                        message += '<img style=\"margin-top: 8px;\" src=\"file://' + image + '\" /><br/><br/>'
+                        content = tweet.find('div', { 'class': 'ext-twitter-content' })
+                        if not content is None:
+                            tweetimg = content.findAll('img')[0].attrs['src']
+                            image = self.download_image(tweetimg, 'tweet_' + title)
+                            message += '<img style=\"margin-top: 8px;\" src=\"file://' + image + '\" /><br/><br/>'
 
-                    message += tweet.find('div', { 'class': 'ext-twitter-caption' }).decode_contents()
+                        message += tweet.find('div', { 'class': 'ext-twitter-caption' }).decode_contents()
 
                     self.notifications.append(message)
 
